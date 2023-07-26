@@ -1,11 +1,14 @@
 package bogen.vr.ck.Routes;
 
+import bogen.vr.ck.CkApplication;
 import bogen.vr.ck.Model.Content;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import static bogen.vr.ck.Utility.Statics.JSON_OK;
-import static bogen.vr.ck.Utility.Statics.contents;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+
+import static bogen.vr.ck.Utility.Statics.*;
 
 @RestController
 @RequestMapping(path = "/api/ck")
@@ -21,6 +24,30 @@ public class CKAPIRoutes {
         else contents.put(contentId, new Content(data));
 
         return JSON_OK;
+    }
+
+    @GetMapping(value = "get/{contentId}")
+    @ResponseBody
+    public String get(@PathVariable Object contentId) {
+
+        if(contents.containsKey(contentId.toString()))
+            return generateSuccessMsg("data", contents.get(contentId.toString()).getContent());
+
+        try {
+            String sql = "select content from contents where content_id = ?";
+            PreparedStatement ps = CkApplication.con.prepareStatement(sql);
+            ps.setString(1, contentId.toString());
+            ResultSet rs = ps.executeQuery();
+
+            if(rs.next())
+                return generateSuccessMsg("data", rs.getString(1));
+
+        }
+        catch (Exception x) {
+            x.printStackTrace();
+        }
+
+        return generateSuccessMsg("data", "");
     }
 
 }

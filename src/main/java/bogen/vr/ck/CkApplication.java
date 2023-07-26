@@ -3,12 +3,17 @@ package bogen.vr.ck;
 import bogen.vr.ck.Utility.Jobs;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.Statement;
 
-@SpringBootApplication
+@SpringBootApplication(exclude = { SecurityAutoConfiguration.class})
+@ComponentScan({"bogen.vr.ck.Routes", "bogen.vr.ck.Security"})
+@Configuration
 public class CkApplication {
 
 	final static private String username = "root";

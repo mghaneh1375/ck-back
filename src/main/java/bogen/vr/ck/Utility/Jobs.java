@@ -14,7 +14,7 @@ public class Jobs implements Runnable {
     public void run() {
 
         Timer timer = new Timer();
-        timer.schedule(new SavaInDB(), 0, 1000 * 60 * 5);
+        timer.schedule(new SavaInDB(), 0, 1000 * 20); // 1000 * 60 * 5
 
     }
 
@@ -27,13 +27,23 @@ public class Jobs implements Runnable {
 
             for(Iterator<Map.Entry<String, Content>> it = contents.entrySet().iterator(); it.hasNext(); ) {
                 Map.Entry<String, Content> entry = it.next();
-                if(curr - entry.getValue().getLastUpdateAt() > 60000) {
+                if(curr - entry.getValue().getLastUpdateAt() > 10000) { //60000
                     try {
-                        String sql = "insert into contents (`conetent_id`, `content`) values (?, ?)";
+
+                        String sql = "update contents set content = ? where content_id = ?";
                         PreparedStatement ps = CkApplication.con.prepareStatement(sql);
-                        ps.setString(1, entry.getKey());
-                        ps.setString(2, entry.getValue().getContent());
-                        ps.executeQuery();
+                        ps.setString(1, entry.getValue().getContent());
+                        ps.setString(2, entry.getKey());
+                        int result = ps.executeUpdate();
+
+                        if(result <= 0) {
+                            sql = "insert into contents (`content_id`, `content`) values (?, ?)";
+                            ps = CkApplication.con.prepareStatement(sql);
+                            ps.setString(1, entry.getKey());
+                            ps.setString(2, entry.getValue().getContent());
+                            ps.executeUpdate();
+                        }
+
                     } catch (Exception x) {
                         x.printStackTrace();
                     }

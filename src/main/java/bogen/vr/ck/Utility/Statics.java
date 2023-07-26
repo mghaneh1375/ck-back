@@ -11,4 +11,16 @@ public class Statics {
 
     public static final String JSON_OK = new JSONObject().put("status", "ok").toString();
 
+    public static String generateSuccessMsg(String key, Object val, PairValue... pairValues) {
+
+        JSONObject jsonObject = new JSONObject()
+                .put("status", "ok")
+                .put(key, val);
+
+        for (PairValue p : pairValues)
+            jsonObject.put(p.getKey().toString(), p.getValue());
+
+        return jsonObject.toString();
+
+    }
 }
